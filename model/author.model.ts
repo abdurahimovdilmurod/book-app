@@ -1,12 +1,21 @@
 import mongoose, { Types } from "mongoose";
 import { CollectionNames } from "../common/types/common.type";
 
-const CategorySchema = new mongoose.Schema({
+const AuthorSchema = new mongoose.Schema({
   name: {
     type: String,
+    require: true,
+    minLength: 2,
+    maxLength: 100,
+  },
+  age: {
+    type: Number,
     required: true,
+  },
+  nationality: {
+    type: String,
     minLength: 3,
-    maxLength: 200,
+    maxLength: 100,
   },
   createdBy: {
     type: Types.ObjectId,
@@ -22,7 +31,4 @@ const CategorySchema = new mongoose.Schema({
   },
 });
 
-export const Category = mongoose.model(
-  CollectionNames.CATEGORIES,
-  CategorySchema
-);
+export const Author = mongoose.model(CollectionNames.AUTHORS, AuthorSchema);
