@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { CategoryDto, CategoryGetDto } from "../dto/category.dto";
 import { validateIt } from "../common/validate";
-import { BookGetDto } from "../dto/book.dto";
 import { Response } from "../common/types/response.type";
 import { auth } from "../common/middlware/auth.middleware";
 import { categoryService } from "../service/category.service";
+import { BookGetDto } from "../dto/book.dto";
+import { CategoryDto, CategoryGetDto } from "../dto/category.dto";
 
 export const categoryRouter = Router();
 
