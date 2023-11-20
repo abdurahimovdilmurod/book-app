@@ -1,12 +1,12 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import { categoryRouter } from "./src/controller/category.controller";
+import { categoryRouter } from "./controller/category.controller";
 import bodyParser from "body-parser";
-import { bookRouter } from "./src/controller/book.controller";
+import { bookRouter } from "./controller/book.controller";
 import mongoose from "mongoose";
-import { authorRouter } from "./src/controller/author.controller";
-import { userRouter } from "./src/controller/user.controller";
-import { authRouter } from "./src/controller/auth.controller";
+import { authorRouter } from "./controller/author.controller";
+import { userRouter } from "./controller/user.controller";
+import { authRouter } from "./controller/auth.controller";
 
 dotenv.config();
 
