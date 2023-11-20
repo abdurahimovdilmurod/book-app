@@ -19,9 +19,7 @@ export async function auth(req: any, res: any, next: NextFunction) {
     token,
     String(process.env.JWT_SECRET),
     async (err: any, data: any) => {
-      console.log(err);
-
-      if (err) return res.sendStatus(403);
+      if (err) return res.status(401).send(Response.UnAuthorized(""));
 
       const user = await UserModel.findById(data._id);
 

@@ -9,6 +9,8 @@ export interface Book extends BaseI {
   publishedAt: string;
   categoryId: Types.ObjectId | any;
   authorId: Types.ObjectId | any;
+  coverImageURL: string | any;
+  imageURLs: Array<String> | any;
 }
 
 const BookSchema = new mongoose.Schema<Book>({
@@ -37,6 +39,13 @@ const BookSchema = new mongoose.Schema<Book>({
   authorId: {
     type: Types.ObjectId,
     ref: CollectionNames.AUTHORS,
+  },
+  coverImageURL: {
+    type: String,
+  },
+  imageURLs: {
+    type: [String],
+    default: [],
   },
 }).add(BaseSchema);
 

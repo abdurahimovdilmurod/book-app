@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import { authorRouter } from "./controller/author.controller";
 import { userRouter } from "./controller/user.controller";
 import { authRouter } from "./controller/auth.controller";
+import multer from "multer";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ mongoose.set("debug", true);
 const app: Express = express();
 const port = process.env.PORT;
 
+app.use("/uploads", express.static("uploads/"));
 app.use(bodyParser.json({}));
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");

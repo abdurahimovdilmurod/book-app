@@ -25,6 +25,43 @@ class BookServise extends BaseService<Book> {
     throw Response.NotFound(id);
   }
 
+  async setCoverImage(id: string | Types.ObjectId, coverImageURL: string) {
+    const update: UpdateQuery<Book> = {
+      $set: {
+        coverImageURL,
+      },
+    };
+
+    const book = await this.update(id, update);
+
+    return book;
+  }
+
+  async pushImage(id: string | Types.ObjectId, image: string) {
+    const update: UpdateQuery<Book> = {
+      $push: {
+        imageURLs: image,
+      },
+    };
+
+    const book = await this.update(id, update);
+
+    return book;
+  }
+
+  async getById(id: string | Types.ObjectId) {
+    const query: FilterQuery<Book> = {
+      isDeleted: false,
+      _id: new Types.ObjectId(id),
+    };
+
+    const book = await this.findOne(query);
+
+    if (!book) throw Response.NotFound(id);
+
+    return book;
+  }
+
   async getCountByCategory(dto: BookGetDto) {
     const $match: PipelineStage.Match = {
       $match: {
@@ -140,6 +177,8 @@ class BookServise extends BaseService<Book> {
         },
         createdAt: 1,
         updatedAt: 1,
+        coverImageURL: 1,
+        imageURLs: 1,
       },
     };
 

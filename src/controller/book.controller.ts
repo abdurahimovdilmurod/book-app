@@ -7,6 +7,7 @@ import { auth } from "../common/middlware/auth.middleware";
 import { bookService } from "../service/book.service";
 import { categoryService } from "../service/category.service";
 import { authorService } from "../service/author.service";
+import { upload } from "../common/multer";
 
 export const bookRouter = Router();
 
@@ -99,3 +100,36 @@ bookRouter.delete("/:id", async (req, res) => {
     return res.send(error);
   }
 });
+
+bookRouter.post(
+  "/upload/cover/:_id",
+  auth,
+  upload.single("file"),
+  async (req, res) => {
+    const dto = await validateIt(req.params, GetByIdDto);
+
+    const book = await bookService.getById(dto._id);
+
+    await bookService.setCoverImage(book._id, req.file?.path.toString() ?? "");
+
+    res.send(Response.Success(req.file?.filename));
+  }
+);
+
+bookRouter.post(
+  "/upload/image/:_id",
+  auth,
+  upload.array("files"),
+  async (req, res) => {
+    const dto = await validateIt(req.params, GetByIdDto);
+
+    const book = await bookService.getById(dto._id);
+
+    if (Array.isArray(req.files)) {
+      for (const file of req.files) {
+        await bookService.pushImage(book._id, file?.path.toString() ?? "");
+      }
+    }
+    res.send(Response.Success(""));
+  }
+);
