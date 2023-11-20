@@ -1,15 +1,22 @@
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 import { CollectionNames } from "../common/types/common.type";
+import { BaseI, BaseSchema } from "./base.model";
 
-const AuthorSchema = new mongoose.Schema({
+export interface Author extends BaseI {
+  name: string;
+  dateOfBirth: Date;
+  nationality: string;
+}
+
+const AuthorSchema = new mongoose.Schema<Author>({
   name: {
     type: String,
     require: true,
     minLength: 2,
     maxLength: 100,
   },
-  age: {
-    type: Number,
+  dateOfBirth: {
+    type: Date,
     required: true,
   },
   nationality: {
@@ -17,18 +24,9 @@ const AuthorSchema = new mongoose.Schema({
     minLength: 3,
     maxLength: 100,
   },
-  createdBy: {
-    type: Types.ObjectId,
-    ref: CollectionNames.USERS,
-  },
-  updatedBy: {
-    type: Types.ObjectId,
-    ref: CollectionNames.USERS,
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-});
+}).add(BaseSchema);
 
-export const Author = mongoose.model(CollectionNames.AUTHORS, AuthorSchema);
+export const AuthorModel = mongoose.model(
+  CollectionNames.AUTHORS,
+  AuthorSchema
+);

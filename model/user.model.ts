@@ -1,22 +1,39 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { CollectionNames } from "../common/types/common.type";
+import { BaseI, BaseSchema } from "./base.model";
 
-const UserSchema = new mongoose.Schema({
+export interface User extends BaseI {
+  _id: Types.ObjectId;
+  name: string;
+  email: string;
+  password?: string;
+  dateOfBirth?: Date;
+}
+
+const UserSchema = new mongoose.Schema<User>({
   name: {
     type: String,
     require: true,
     minLength: 2,
     maxLength: 100,
   },
-  //age kerakmas o'rniga dateofBirth qo'shish kerak
-  age: {
-    type: Number,
+  email: {
+    type: String,
+    require: true,
+  },
+  password: {
+    type: String,
+    require: true,
+  },
+  //dateOfBirth kerakmas o'rniga dateofBirth qo'shish kerak
+  dateOfBirth: {
+    type: Date,
     required: true,
   },
   isDeleted: {
     type: Boolean,
     default: false,
   },
-});
+}).add(BaseSchema);
 
-export const User = mongoose.model(CollectionNames.USERS, UserSchema);
+export const UserModel = mongoose.model(CollectionNames.USERS, UserSchema);

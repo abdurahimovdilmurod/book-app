@@ -7,15 +7,12 @@ import {
   IsOptional,
   IsMongoId,
 } from "class-validator";
+import { BaseDto } from "./base.dto";
 
-export class BookDto {
+export class BookDto extends BaseDto {
   @IsString({})
   @MinLength(3)
   name: string;
-
-  @IsString({})
-  @MinLength(2)
-  author: string;
 
   @IsOptional()
   @IsString({})

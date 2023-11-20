@@ -1,7 +1,17 @@
 import mongoose, { Types } from "mongoose";
 import { CollectionNames } from "../common/types/common.type";
+import { BaseI, BaseSchema } from "./base.model";
 
-const BookSchema = new mongoose.Schema({
+export interface Book extends BaseI {
+  name: string;
+  description: string;
+  pageCount: number;
+  publishedAt: string;
+  categoryId: Types.ObjectId | any;
+  authorId: Types.ObjectId | any;
+}
+
+const BookSchema = new mongoose.Schema<Book>({
   name: {
     type: String,
     required: true,
@@ -28,18 +38,6 @@ const BookSchema = new mongoose.Schema({
     type: Types.ObjectId,
     ref: CollectionNames.AUTHORS,
   },
-  createdBy: {
-    type: Types.ObjectId,
-    ref: CollectionNames.USERS,
-  },
-  updatedBy: {
-    type: Types.ObjectId,
-    ref: CollectionNames.USERS,
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-});
+}).add(BaseSchema);
 
-export const Book = mongoose.model(CollectionNames.BOOKS, BookSchema);
+export const BookModel = mongoose.model(CollectionNames.BOOKS, BookSchema);

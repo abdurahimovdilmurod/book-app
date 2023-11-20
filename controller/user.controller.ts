@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { validateIt } from "../common/validate";
 import { UserDto, UserGetDto } from "../dto/user.dto";
-import { User } from "../model/user.model";
+import { UserModel } from "../model/user.model";
 import { Response } from "../common/types/response.type";
 import { BookGetDto } from "../dto/book.dto";
 import { PipelineStage, Types } from "mongoose";
+import md5 from "md5";
 
 export const userRouter = Router();
 
@@ -19,7 +20,7 @@ userRouter.get("/:_id", async (req, res) => {
       },
     };
 
-    const user = await User.aggregate([$match]);
+    const user = await UserModel.aggregate([$match]);
 
     return res.send(Response.Success(user));
   } catch (error) {
@@ -48,8 +49,14 @@ userRouter.get("/", async (req, res) => {
       $limit: data.limit,
     };
 
-    const user = await User.aggregate([$match, $skip, $limit]);
-    const total = await User.countDocuments();
+    const $project: PipelineStage.Project = {
+      $project: {
+        password: 0,
+      },
+    };
+
+    const user = await UserModel.aggregate([$match, $skip, $limit, $project]);
+    const total = await UserModel.countDocuments();
 
     return res.send(Response.Success({ user, total }));
   } catch (error) {
@@ -60,8 +67,13 @@ userRouter.get("/", async (req, res) => {
 
 userRouter.post("/", async (req, res) => {
   try {
-    const user = await validateIt(req.body, UserDto);
-    await new User(user).save();
+    const dto = await validateIt(req.body, UserDto);
+
+    dto.password = md5(dto.password);
+
+    const user = await new UserModel(dto).save();
+
+    if (user.password) delete user.password;
 
     return res.send(Response.Success(user));
   } catch (error) {
@@ -73,7 +85,7 @@ userRouter.post("/", async (req, res) => {
 userRouter.put("/:id", async (req, res) => {
   try {
     const result = await validateIt(req.body, UserDto);
-    const user = await User.findOneAndUpdate(
+    const user = await UserModel.findOneAndUpdate(
       { _id: new Types.ObjectId(req.params.id), isDeleted: false },
       result,
       { new: true }
@@ -90,7 +102,7 @@ userRouter.put("/:id", async (req, res) => {
 
 userRouter.delete("/:id", async (req, res) => {
   try {
-    const user = await User.findOne({
+    const user = await UserModel.findOne({
       _id: new Types.ObjectId(req.params.id),
       isDeleted: false,
     });

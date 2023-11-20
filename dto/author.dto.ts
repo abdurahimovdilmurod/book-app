@@ -1,20 +1,21 @@
 import {
+  IsDateString,
   IsMongoId,
-  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
 } from "class-validator";
+import { BaseDto } from "./base.dto";
 
-export class AuthorDto {
+export class AuthorDto extends BaseDto {
   @IsString({})
   @MinLength(2)
   @MaxLength(100)
   name: string;
 
-  @IsNumber()
-  age: number;
+  @IsDateString()
+  dateOfBirth: string;
 
   @IsOptional()
   @IsString({})

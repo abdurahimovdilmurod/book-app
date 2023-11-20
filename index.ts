@@ -6,6 +6,9 @@ import { bookRouter } from "./controller/book.controller";
 import mongoose from "mongoose";
 import { authorRouter } from "./controller/author.controller";
 import { userRouter } from "./controller/user.controller";
+import jwt from "jsonwebtoken";
+import { generateAccessToken } from "./common/middlware/auth.middleware";
+import { authRouter } from "./controller/auth.controller";
 
 dotenv.config();
 
@@ -31,6 +34,7 @@ app.use("/category", categoryRouter);
 app.use("/book", bookRouter);
 app.use("/author", authorRouter);
 app.use("/user", userRouter);
+app.use("/auth", authRouter);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

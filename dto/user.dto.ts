@@ -1,4 +1,6 @@
 import {
+  IsDateString,
+  IsEmail,
   IsMongoId,
   IsNumber,
   IsString,
@@ -12,8 +14,31 @@ export class UserDto {
   @MaxLength(100)
   name: string;
 
-  @IsNumber()
-  age: number;
+  @IsEmail()
+  email: string;
+
+  @IsString({})
+  @MinLength(8)
+  @MaxLength(200)
+  password: string;
+
+  @IsString({})
+  @MinLength(8)
+  @MaxLength(200)
+  confirmPassword: string;
+
+  @IsDateString()
+  dateOfBirth: string;
+}
+
+export class LoginDto {
+  @IsEmail()
+  email: string;
+
+  @IsString({})
+  @MinLength(8)
+  @MaxLength(200)
+  password: string;
 }
 
 export class UserGetDto {
