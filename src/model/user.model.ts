@@ -7,7 +7,10 @@ export interface User extends BaseI {
   name: string;
   email: string;
   password?: string;
+  otp: number;
+  isVerified: boolean;
   dateOfBirth?: Date;
+  isAdmin: boolean | any;
 }
 
 const UserSchema = new mongoose.Schema<User>({
@@ -19,18 +22,28 @@ const UserSchema = new mongoose.Schema<User>({
   },
   email: {
     type: String,
+    unique: true,
     require: true,
   },
   password: {
     type: String,
     require: true,
   },
-  //dateOfBirth kerakmas o'rniga dateofBirth qo'shish kerak
+  otp: {
+    type: Number,
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   dateOfBirth: {
     type: Date,
-    required: true,
   },
   isDeleted: {
+    type: Boolean,
+    default: false,
+  },
+  isAdmin: {
     type: Boolean,
     default: false,
   },

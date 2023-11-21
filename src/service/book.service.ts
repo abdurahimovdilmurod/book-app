@@ -134,7 +134,6 @@ class BookServise extends BaseService<Book> {
       },
     };
 
-    //$unwindCategory
     const $unwindCategory: PipelineStage.Unwind = {
       $unwind: {
         path: "$category",
@@ -151,7 +150,6 @@ class BookServise extends BaseService<Book> {
       },
     };
 
-    //$unwindAuthor
     const $unwindAuthor: PipelineStage.Unwind = {
       $unwind: {
         path: "$author",

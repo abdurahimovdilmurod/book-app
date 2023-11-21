@@ -1,26 +1,19 @@
 import { Router } from "express";
 import { validateIt } from "../common/validate";
 import { UserDto, UserGetDto } from "../dto/user.dto";
-import { UserModel } from "../model/user.model";
 import { Response } from "../common/types/response.type";
 import { BookGetDto } from "../dto/book.dto";
-import { PipelineStage, Types } from "mongoose";
 import md5 from "md5";
+import { authAdmin } from "../common/middlware/auth.middleware";
+import { userService } from "../service/user.service";
 
 export const userRouter = Router();
 
-userRouter.get("/:_id", async (req, res) => {
+userRouter.get("/:_id", authAdmin, async (req, res) => {
   try {
-    const data = await validateIt(req.params, UserGetDto);
+    const dto = await validateIt(req.params, UserGetDto);
 
-    const $match: PipelineStage.Match = {
-      $match: {
-        isDeleted: false,
-        _id: new Types.ObjectId(data._id),
-      },
-    };
-
-    const user = await UserModel.aggregate([$match]);
+    const user = await userService.getByIdAggregation(dto._id);
 
     return res.send(Response.Success(user));
   } catch (error) {
@@ -29,90 +22,62 @@ userRouter.get("/:_id", async (req, res) => {
   }
 });
 
-userRouter.get("/", async (req, res) => {
+userRouter.get("/", authAdmin, async (req, res) => {
   try {
-    const data = await validateIt(req.query, BookGetDto);
-    const $match: PipelineStage.Match = {
-      $match: {
-        isDeleted: false,
-      },
-    };
+    const dto = await validateIt(req.query, BookGetDto);
 
-    if (data.search)
-      $match.$match.name = { $regax: data.search, $options: "i" };
+    const data = await userService.getPaging(dto);
 
-    const $skip: PipelineStage.Skip = {
-      $skip: (data.page - 1) * data.limit,
-    };
-
-    const $limit: PipelineStage.Limit = {
-      $limit: data.limit,
-    };
-
-    const $project: PipelineStage.Project = {
-      $project: {
-        password: 0,
-      },
-    };
-
-    const user = await UserModel.aggregate([$match, $skip, $limit, $project]);
-    const total = await UserModel.countDocuments();
-
-    return res.send(Response.Success({ user, total }));
+    return res.send(Response.Success(data));
   } catch (error) {
     console.log(error);
     return res.send(error);
   }
 });
 
-userRouter.post("/", async (req, res) => {
+userRouter.post("/", authAdmin, async (req, res) => {
   try {
     const dto = await validateIt(req.body, UserDto);
 
+    dto.createdById = req.user._id;
+
     dto.password = md5(dto.password);
 
-    const user = await new UserModel(dto).save();
+    const user = await userService.save(dto);
 
-    if (user.password) delete user.password;
+    const result = await userService.getByIdAggregation(user._id);
 
-    return res.send(Response.Success(user));
+    if (result.password) delete result.password;
+
+    return res.send(Response.Success(result));
   } catch (error) {
     console.log(error);
     return res.send(error);
   }
 });
 
-userRouter.put("/:id", async (req, res) => {
+userRouter.put("/:id", authAdmin, async (req, res) => {
   try {
-    const result = await validateIt(req.body, UserDto);
-    const user = await UserModel.findOneAndUpdate(
-      { _id: new Types.ObjectId(req.params.id), isDeleted: false },
-      result,
-      { new: true }
-    );
-    if (!user) {
-      return res.send(Response.NotFound(req.params.id));
-    }
-    return res.send(Response.Success(user));
+    const dto = await validateIt(req.body, UserDto);
+
+    dto.updatedById = req.user._id;
+
+    const user = await userService.save(dto);
+
+    const result = await userService.getByIdAggregation(user._id);
+
+    return res.send(Response.Success(result));
   } catch (error) {
     console.log(error);
     return res.send(error);
   }
 });
 
-userRouter.delete("/:id", async (req, res) => {
+userRouter.delete("/:id", authAdmin, async (req, res) => {
   try {
-    const user = await UserModel.findOne({
-      _id: new Types.ObjectId(req.params.id),
-      isDeleted: false,
-    });
+    const result = await userService.getById(req.params.id);
 
-    if (!user) {
-      return res.send(Response.NotFound(req.params.id));
-    }
-
-    user.isDeleted = true;
-    await user.save();
+    const user = await userService.delete(result.id, req.user.id);
 
     return res.send(Response.Success(user));
   } catch (error) {

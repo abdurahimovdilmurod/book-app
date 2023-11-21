@@ -46,7 +46,7 @@ export class BaseService<T> {
   }
 
   protected async updateOne(id: string | Types.ObjectId, data: any) {
-    return await this.model.findByIdAndUpdate(id, data);
+    return await this.model.findByIdAndUpdate(id, data, { new: true });
   }
 
   async delete(id: string | Types.ObjectId, deletedById: Types.ObjectId) {
@@ -65,7 +65,9 @@ export class BaseService<T> {
     return await this.model.findById(id.toString());
   }
 
-  protected async findOne(query: FilterQuery<T>) {
+  protected async findOne(
+    query: FilterQuery<T>
+  ): Promise<(T & Document) | null> {
     return await this.model.findOne(query);
   }
 
