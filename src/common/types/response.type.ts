@@ -8,6 +8,9 @@ export enum ErrorCodes {
   NOT_ENOUGH_PERMISSION = -6,
   OTP_NOT_MATCH = -7,
   UNKNOWN_ERROR = -8,
+  EXPIRED_OTP = -9,
+  NOT_REGISTERED = -10,
+  OTP_SENT_RECENTLY = -11,
 }
 
 export class Response {
@@ -65,7 +68,27 @@ export class Response {
     );
   }
 
+  public static NotRegistered(data: any) {
+    return new Response(
+      data,
+      ErrorCodes.NOT_REGISTERED,
+      "You are not registered"
+    );
+  }
+
+  public static ExpiredOTP() {
+    return new Response("", ErrorCodes.EXPIRED_OTP, "OTP expired");
+  }
+
   public static UnKnownError() {
     return new Response("", ErrorCodes.UNKNOWN_ERROR, "Unknown error");
+  }
+
+  public static OtpSentAtRecently(data?: any) {
+    return new Response(
+      data,
+      ErrorCodes.OTP_SENT_RECENTLY,
+      "OTP sent at recently"
+    );
   }
 }

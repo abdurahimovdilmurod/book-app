@@ -7,7 +7,6 @@ import {
   IsString,
   MaxLength,
   MinLength,
-  isNumber,
 } from "class-validator";
 import { BaseDto } from "./base.dto";
 
@@ -35,7 +34,8 @@ export class UserDto extends BaseDto {
   @IsDateString()
   dateOfBirth: string;
 
-  otp: number;
+  otp: string;
+  otpSentAt: Date;
 }
 
 export class LoginDto {
@@ -48,12 +48,30 @@ export class LoginDto {
   password: string;
 }
 
-export class EmailDto {
+export class EmailAndOtpDto {
   @IsEmail()
   email: string;
 
   @IsNumber()
   otp: number;
+}
+
+export class EmailAndOtpPasswordDto {
+  @IsEmail()
+  email: string;
+
+  @IsNumber()
+  otp: number;
+
+  @IsString({})
+  @MinLength(8)
+  @MaxLength(200)
+  password: string;
+}
+
+export class EmailDto {
+  @IsEmail()
+  email: string;
 }
 export class UserGetDto {
   @IsMongoId()

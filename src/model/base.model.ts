@@ -5,7 +5,7 @@ export interface BaseI {
   createdById?: Types.ObjectId;
   updatedById?: Types.ObjectId;
   deletedById?: Types.ObjectId;
-  createdAt?: Date;
+  createdAt: Date;
   updatedAt?: Date;
   deletedAt?: Date;
   isDeleted: boolean;

@@ -6,10 +6,11 @@ export interface User extends BaseI {
   _id: Types.ObjectId;
   name: string;
   email: string;
-  password?: string;
-  otp: number;
+  password: string;
+  otp: string;
   isVerified: boolean;
   dateOfBirth?: Date;
+  otpSentAt: Date;
   isAdmin: boolean | any;
 }
 
@@ -30,13 +31,16 @@ const UserSchema = new mongoose.Schema<User>({
     require: true,
   },
   otp: {
-    type: Number,
+    type: String,
   },
   isVerified: {
     type: Boolean,
     default: false,
   },
   dateOfBirth: {
+    type: Date,
+  },
+  otpSentAt: {
     type: Date,
   },
   isDeleted: {

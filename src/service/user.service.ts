@@ -37,9 +37,22 @@ class UserService extends BaseService<User> {
   async checkEmailToExist(email: string) {
     const user = await this.findOne({ email: email });
 
-    if (user) {
-      return Response.AlreadyExist(user);
-    }
+    if (user) throw Response.AlreadyExist(user);
+
+    return user;
+  }
+
+  // async checkEmailToExist2(email: string) {
+  //   const user = await this.findOne({ email: email });
+
+  //   if (!user) throw Response.NotRegistered(user);
+
+  //   return user;
+  // }
+
+  async getByEmailWithoutError(email: string) {
+    const user = await this.findOne({ email: email });
+
     return user;
   }
 
@@ -86,6 +99,29 @@ class UserService extends BaseService<User> {
       };
     }
 
+    return await this.updateOne(id, update);
+  }
+
+  async setOTP(id: Types.ObjectId, otp: string) {
+    const update: UpdateQuery<User> = {
+      $set: {
+        otp: otp,
+        otpSentAt: new Date(),
+      },
+    };
+
+    return await this.updateOne(id, update);
+  }
+
+  async setPasswordAndRemoveOTP(id: Types.ObjectId, password: string) {
+    const update: UpdateQuery<User> = {
+      $set: {
+        password: password,
+      },
+      $unset: {
+        otp: "",
+      },
+    };
     return await this.updateOne(id, update);
   }
 
